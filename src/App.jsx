@@ -1,14 +1,7 @@
-import MoodMusic from "./components/MoodMusic";
+import FaceExpression from "./components/FaceExpression";
 
 function App() {
-  return (
-    <div>
-      <h1 style={{ textAlign: "center" }}>
-        🎵 Mood Based Music Suggestion App
-      </h1>
-      <MoodMusic />
-    </div>
-  );
+  return <FaceExpression />;
 }
 
 export default App;

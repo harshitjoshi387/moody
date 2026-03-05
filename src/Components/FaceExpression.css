@@ -1,0 +1,98 @@
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #141e30, #243b55);
+  color: white;
+  font-family: "Segoe UI", sans-serif;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 28px;
+}
+
+/* Button */
+.actionBtn {
+  padding: 12px 25px;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.actionBtn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Content Layout */
+.content {
+  flex: 1;
+  display: flex;
+  gap: 30px;
+  height: 100%;
+}
+
+/* Video Section */
+.videoSection {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+/* Info Section */
+.infoSection {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 30px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.moodBadge {
+  padding: 20px;
+  border-radius: 10px;
+  background: white;
+  color: #111;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+}
