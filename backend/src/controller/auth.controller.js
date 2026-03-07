@@ -79,4 +79,13 @@ async function loginUser(req,res){
         }
     })
 }
-module.exports= {registerUser}
+async function getMe(){
+    
+}
+
+module.exports= {
+    registerUser,
+    loginUser,
+    getMe
+
+}
