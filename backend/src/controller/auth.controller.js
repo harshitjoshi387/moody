@@ -79,8 +79,8 @@ async function loginUser(req,res){
         }
     })
 }
-async function getMe(){
-    
+async function getMe( req,res){
+    const user = await userModel.findById(req.user.id)
 }
 
 module.exports= {
