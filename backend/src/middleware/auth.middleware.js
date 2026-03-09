@@ -1,4 +1,6 @@
 const userModel = require('../model/user.model')
+const blacklistModel = require('../model/blacklist.model')
+
 const jwt = require('jsonwebtoken')
 
 async function authUser(req,res,next){
