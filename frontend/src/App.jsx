@@ -1,7 +1,7 @@
-import FaceExpression from "./components/FaceExpression";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-  return <FaceExpression />;
+  return <Dashboard />;
 }
 
 export default App;
