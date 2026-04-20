@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./dashboard.css";
 import FaceDetection from "../components/FaceDetection";
+import { suggestSong } from "../services/song.api";
 
 const moods = [
   { e: "😊", n: "Happy", s: "Upbeat tracks queued for you", c: 82, col: "#4ade80", track: "Tum Hi Ho", artist: "Arijit Singh" },
@@ -354,11 +355,19 @@ export default function DashboardUI() {
     }
   };
 
-  const handleMoodDetected = (idx) => {
+  const handleMoodDetected = async (idx) => {
     setMoodIndex(idx);
     setShowScanner(false);
     setProgress(0);
     setPlaying(false);
+
+    try {
+      const mood = moods[idx].n; // Get mood name (e.g., Happy, Sad)
+      const song = await suggestSong(mood); // Fetch song from backend
+      console.log("Suggested Song:", song); // Replace with actual song playback logic
+    } catch (error) {
+      console.error("Error fetching song:", error);
+    }
   };
 
   return (
