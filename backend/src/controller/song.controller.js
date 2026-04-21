@@ -1,5 +1,6 @@
 
 const Song = require('../model/song.model');
+const storageService= require("../services/storage.service")
 const NodeID3 = require('node-id3');
 
 
@@ -22,6 +23,16 @@ async function uploadSong(req, res) {
     console.error(err);
     res.status(500).json({ error: 'Failed to read ID3 tags' });
   }
+  const songFile =await storageService.uploadfile({
+    buffer:songBuffer,
+    filename:tags.title +"mp3",
+    folder:'/moodify/songs'
+  })
+  const posterFile=await storageService.uploadfile({
+    buffer:tags.image.imageBuffer,
+    filename:tags.title+".jpeg",
+    folder:"/moodify/poster"
+  })
 }
 
 module.exports = {

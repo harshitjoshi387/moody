@@ -14,7 +14,7 @@ const imagekit = new ImageKit({
  * @param {string} folder - The folder path in ImageKit (optional)
  * @returns {Promise<object>} - The uploaded file info
  */
-async function uploadToImageKit(fileBuffer, fileName, folder = "/uploads") {
+async function uploadfile(fileBuffer, fileName, folder = "/uploads") {
   try {
     const result = await imagekit.upload({
       file: fileBuffer,
@@ -28,5 +28,5 @@ async function uploadToImageKit(fileBuffer, fileName, folder = "/uploads") {
 }
 
 module.exports = {
-  uploadToImageKit,
+  uploadfile,
 };
