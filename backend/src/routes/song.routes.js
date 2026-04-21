@@ -5,6 +5,6 @@ const router = express.Router();
 
 
 // POST /api/suggest-song
-router.post('/suggest-song', suggestSong);
+router.post('/suggest-song', songController.uploadSong);
 
 module.exports = router;
