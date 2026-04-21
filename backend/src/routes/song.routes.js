@@ -1,6 +1,8 @@
 const express = require('express');
+const upload = require("../middleware/upload.middleware")
+const songController =require("../controller/song.controller")
 const router = express.Router();
-const { suggestSong } = require('../controller/song.controller');
+
 
 // POST /api/suggest-song
 router.post('/suggest-song', suggestSong);
