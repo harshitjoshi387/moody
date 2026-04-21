@@ -1,4 +1,5 @@
 
+const songModel = require('../model/song.model');
 const Song = require('../model/song.model');
 const storageService= require("../services/storage.service")
 const NodeID3 = require('node-id3');
@@ -32,6 +33,16 @@ async function uploadSong(req, res) {
     buffer:tags.image.imageBuffer,
     filename:tags.title+".jpeg",
     folder:"/moodify/poster"
+  })
+  const song= await songModel.create({
+    title:tags.title,
+    url:songFile.url,
+    posterUrl:posterFile.url,
+    mood
+  })
+  res.status(201).json({
+    message:"song created successfully",
+    song
   })
 }
 
