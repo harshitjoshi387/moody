@@ -5,7 +5,11 @@ const songSchema = new mongoose.Schema({
   artist: { type: String, required: true },
   genre: { type: String, required: true },
   mood: { type: String, required: true },
-  url: { type: String, required: true }
+  url: { type: String, required: true },
+  posterUrl:{
+    type:String,
+    required:true
+  }
 });
-
-module.exports = mongoose.model('Song', songSchema);
+const songModel= mongoose.model('Song', songSchema);
+module.exports = songModel
