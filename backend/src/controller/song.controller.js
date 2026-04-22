@@ -1,51 +1,47 @@
-
-const songModel = require('../model/song.model');
-const Song = require('../model/song.model');
-const storageService= require("../services/storage.service")
-const NodeID3 = require('node-id3');
-
+const NodeID3 = require("node-id3");
+const songModel = require("../model/song.model");
 
 async function uploadSong(req, res) {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
-    // Read ID3 tags from the uploaded file buffer
-    const tags = NodeID3.read(req.file.buffer);
-    // Example: tags.title, tags.artist, tags.album, etc.
-    console.log('ID3 Tags:', tags);
+    const tags = NodeID3.read(req.file.buffer) || {};
+    const artist = tags.artist || req.body.artist;
+    const title = tags.title || req.body.title || req.file.originalname;
+    const genre = tags.genre || req.body.genre || "unknown";
+    const requestedMood = String(req.body.mood || "").trim().toLowerCase();
+    const mood = ["sad", "happy", "surprised"].includes(requestedMood)
+      ? requestedMood
+      : "happy";
 
-    res.status(200).json({
-      message: 'Song uploaded',
-      id3: tags
+    if (!artist || !title) {
+      return res.status(400).json({
+        error: "song title and artist are required",
+      });
+    }
+
+    const song = await songModel.create({
+      title,
+      artist,
+      genre,
+      mood,
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to read ID3 tags' });
+
+    return res.status(201).json({
+      message: "song uploaded successfully",
+      song,
+      id3: tags,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: "Failed to upload song",
+      detail: error.message,
+    });
   }
-  const songFile =await storageService.uploadfile({
-    buffer:songBuffer,
-    filename:tags.title +"mp3",
-    folder:'/moodify/songs'
-  })
-  const posterFile=await storageService.uploadfile({
-    buffer:tags.image.imageBuffer,
-    filename:tags.title+".jpeg",
-    folder:"/moodify/poster"
-  })
-  const song= await songModel.create({
-    title:tags.title,
-    url:songFile.url,
-    posterUrl:posterFile.url,
-    mood
-  })
-  res.status(201).json({
-    message:"song created successfully",
-    song
-  })
 }
 
 module.exports = {
-  uploadSong
+  uploadSong,
 };
