@@ -11,8 +11,15 @@ const songSchema = new mongoose.Schema({
       values: ["sad", "happy", "surprised"],
       message: "Mood must be either sad, happy, or surprised"
     }
+  },
+  file: {
+    type: String,
+    required: true
   }
 });
 
+// ✅ MODEL CREATE KARO
 const songModel = mongoose.model('Song', songSchema);
+
+// ✅ EXPORT KARO
 module.exports = songModel;

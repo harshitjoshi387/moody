@@ -1,8 +1,9 @@
-import "./App.css";
+import "./styles/app.css";
 import { Navigate, Route, Routes } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Callback from "./pages/Callback/Callback";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 import { getSessionUser } from "./utils/devAuth";
 
 function ProtectedRoute({ children }) {
@@ -13,6 +14,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
+      <Route path="/callback" element={<Callback />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route

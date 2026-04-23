@@ -4,7 +4,7 @@ import {
   detectEmotionFromVideo,
   startVideoStream,
   stopVideoStream,
-} from "../utils/emotionDetector";
+} from "../../utils/emotionDetector";
 
 function VideoCapture() {
   const videoRef = useRef(null);

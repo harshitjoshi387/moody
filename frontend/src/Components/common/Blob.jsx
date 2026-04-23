@@ -1,7 +1,7 @@
-
-function Blob({ style }) {
+function Blob({ className = "", style }) {
   return (
     <div
+      className={className}
       style={{
         position: "absolute",
         borderRadius: "50%",

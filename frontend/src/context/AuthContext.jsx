@@ -1,16 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { getCurrentUser, login, logout, register } from "../services/auth.api";
+import { createContext, useEffect, useState } from "react";
+import {
+  getCurrentUser,
+  login,
+  logout,
+  register,
+} from "../services/authService";
 
-const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
-export const useAuth = () => useContext(AuthContext);
-
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // On mount, check if user is logged in
     getCurrentUser()
       .then((data) => setUser(data))
       .catch(() => setUser(null))
@@ -35,8 +37,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login: handleLogin, register: handleRegister, logout: handleLogout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login: handleLogin,
+        register: handleRegister,
+        logout: handleLogout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-};
+}

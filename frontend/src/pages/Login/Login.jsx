@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import Blob from "../../components/common/Blob";
+import Field from "../../components/common/Field";
 import {
   DEV_LOGIN_HINT,
   getSessionUser,
   loginWithDevCredentials,
-} from "../utils/devAuth";
-
-import Blob from "../components/Blob";
-import Field from "../components/Field";
-import "../styles/login.css";
+} from "../../utils/devAuth";
+import "./Login.css";
 
 const initialForm = { identifier: "", password: "" };
 
@@ -18,25 +17,22 @@ function Login() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // small delay animation trigger
+    // Reserved for lightweight page-enter animation hooks.
   }, []);
 
   if (getSessionUser()) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((currentForm) => ({ ...currentForm, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-    const result = loginWithDevCredentials(
-      form.identifier,
-      form.password
-    );
+    const result = loginWithDevCredentials(form.identifier, form.password);
 
     if (!result.success) {
       setError(result.message);
@@ -57,16 +53,12 @@ function Login() {
 
   return (
     <div className="login-page">
-
-      {/* BLOBS (background only) */}
       <div className="bg-blobs">
         <Blob className="blob blob-1" />
         <Blob className="blob blob-2" />
       </div>
 
-      {/* MAIN CARD */}
       <div className="login-container">
-
         <h2 className="login-heading">Login to Moodify</h2>
 
         <button className="demo-btn" onClick={handleDemo}>
@@ -74,7 +66,6 @@ function Login() {
         </button>
 
         <form className="login-form" onSubmit={handleSubmit}>
-          
           <Field
             id="identifier"
             label="Email or Username"
@@ -107,7 +98,7 @@ function Login() {
         </form>
 
         <p className="footer-text">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link to="/register" className="link">
             Register
           </Link>

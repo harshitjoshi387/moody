@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { getSessionUser, registerDevUser } from "../utils/devAuth";
+import { getSessionUser, registerDevUser } from "../../utils/devAuth";
 
 const initialForm = {
   name: "",
