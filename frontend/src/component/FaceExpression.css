@@ -1,0 +1,386 @@
+/* ============================
+   FaceExpression.css
+   ============================ */
+
+.fe-root {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: linear-gradient(180deg, #0d1f0d 0%, #121212 40%);
+}
+
+/* ── Idle screen ── */
+.fe-idle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 480px;
+  text-align: center;
+}
+
+.fe-icon-wrap {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(30, 215, 96, 0.1);
+  border: 1px solid rgba(30, 215, 96, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fe-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes fe-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(30, 215, 96, 0.2); }
+  50%       { box-shadow: 0 0 0 18px rgba(30, 215, 96, 0); }
+}
+
+.fe-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.fe-subtitle {
+  font-size: 14px;
+  color: #b3b3b3;
+  line-height: 1.7;
+}
+
+/* ── Buttons ── */
+.fe-btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 999px;
+  background: #1ed760;
+  border: none;
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  margin-top: 8px;
+}
+
+.fe-btn-primary:hover {
+  background: #1fdf64;
+  transform: scale(1.04);
+}
+
+.fe-btn-secondary {
+  padding: 10px 28px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  margin-top: 12px;
+}
+
+.fe-btn-secondary:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.fe-btn-ghost {
+  padding: 8px 20px;
+  background: transparent;
+  border: none;
+  color: #b3b3b3;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 4px;
+}
+
+/* ── Center layout (loading / detected / fetching / error) ── */
+.fe-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+/* ── Spinner ── */
+.fe-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: #1ed760;
+  border-radius: 50%;
+  animation: fe-spin 0.8s linear infinite;
+}
+
+@keyframes fe-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Hint text ── */
+.fe-hint {
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+/* ── Scanning screen ── */
+.fe-scan-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.fe-video-box {
+  position: relative;
+  width: 480px;
+  height: 360px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid rgba(30, 215, 96, 0.4);
+  box-shadow: 0 0 40px rgba(30, 215, 96, 0.15);
+}
+
+.fe-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror */
+}
+
+.fe-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+  pointer-events: none;
+}
+
+/* Countdown badge */
+.fe-countdown {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  border: 2px solid #1ed760;
+  color: #1ed760;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: fe-pop 1s ease-in-out infinite;
+}
+
+@keyframes fe-pop {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.12); }
+}
+
+/* Scan ring animation */
+.fe-scan-ring {
+  position: absolute;
+  inset: 0;
+  border: 3px solid transparent;
+  border-top-color: #1ed760;
+  border-radius: 16px;
+  animation: fe-ring 1.5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fe-ring {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Mood pill ── */
+.fe-mood-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  border: 2px solid;
+  background: rgba(255,255,255,0.04);
+  animation: fe-fadein 0.4s ease;
+}
+
+@keyframes fe-fadein {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.fe-mood-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.fe-mood-label {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* ── Results ── */
+.fe-results {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.fe-results-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.fe-results-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ── Song list ── */
+.fe-song-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fe-song-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.15s;
+  cursor: pointer;
+  animation: fe-slidein 0.3s ease both;
+}
+
+.fe-song-card:nth-child(1)  { animation-delay: 0.05s; }
+.fe-song-card:nth-child(2)  { animation-delay: 0.10s; }
+.fe-song-card:nth-child(3)  { animation-delay: 0.15s; }
+.fe-song-card:nth-child(4)  { animation-delay: 0.20s; }
+.fe-song-card:nth-child(5)  { animation-delay: 0.25s; }
+.fe-song-card:nth-child(6)  { animation-delay: 0.30s; }
+.fe-song-card:nth-child(7)  { animation-delay: 0.35s; }
+.fe-song-card:nth-child(8)  { animation-delay: 0.40s; }
+.fe-song-card:nth-child(9)  { animation-delay: 0.45s; }
+.fe-song-card:nth-child(10) { animation-delay: 0.50s; }
+
+@keyframes fe-slidein {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fe-song-card:hover {
+  background: rgba(255,255,255,0.09);
+}
+
+.fe-song-num {
+  font-size: 13px;
+  color: #6a6a6a;
+  font-variant-numeric: tabular-nums;
+  width: 24px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.fe-song-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.fe-song-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fe-song-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #282828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fe-song-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fe-song-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fe-song-artist {
+  font-size: 12px;
+  color: #b3b3b3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fe-song-mood-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.fe-song-duration {
+  font-size: 12px;
+  color: #6a6a6a;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Error ── */
+.fe-error-icon {
+  font-size: 48px;
+}
+
+.fe-error-msg {
+  font-size: 14px;
+  color: #e06666;
+  text-align: center;
+  max-width: 360px;
+}

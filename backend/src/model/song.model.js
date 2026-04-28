@@ -1,25 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const songSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  artist: { type: String, required: true },
-  genre: { type: String, required: true },
-  mood: {
-    type: String,
-    required: true,
-    enum: {
-      values: ["sad", "happy", "surprised"],
-      message: "Mood must be either sad, happy, or surprised"
-    }
-  },
-  file: {
-    type: String,
-    required: true
-  }
-});
+  title: { type: String },
+  artist: { type: String, default: "Unknown Artist" }, 
+  genre: { type: String, default: "unknown" },         
+  type: { type: String, default: "audio" },           
+  mood: { type: String, required: true },           
+  poster: { type: String, default: "" },              
+  url: { type: String, required: true },            
+  file: { type: Object },                              
+}, { timestamps: true });
 
-// ✅ MODEL CREATE KARO
-const songModel = mongoose.model('Song', songSchema);
-
-// ✅ EXPORT KARO
-module.exports = songModel;
+module.exports = mongoose.model("Song", songSchema);

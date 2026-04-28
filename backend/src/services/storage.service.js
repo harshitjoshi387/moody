@@ -1,23 +1,28 @@
-const ImageKit = require("@imagekit/nodejs");
+const { imagekit, hasImageKitConfig } = require("../config/imageKit");
 
-const imagekit = new ImageKit({
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || undefined,
-});
+function sanitizeFileName(fileName = "file") {
+  return fileName.replace(/\s+/g, "-").replace(/[^\w.-]/g, "");
+}
 
-async function uploadfile(fileBuffer, fileName, folder = "/uploads") {
+async function uploadFile(fileBuffer, fileName, folder = "/uploads") {
+  if (!hasImageKitConfig()) {
+    throw new Error(
+      "ImageKit is not configured. Add IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY, and IMAGEKIT_URL_ENDPOINT in backend/.env"
+    );
+  }
+
   if (!fileBuffer || !fileName) {
     throw new Error("fileBuffer and fileName are required");
   }
 
   return imagekit.upload({
     file: fileBuffer,
-    fileName,
+    fileName: sanitizeFileName(fileName),
     folder,
+    useUniqueFileName: true,
   });
 }
 
 module.exports = {
-  uploadfile,
+  uploadFile,
 };

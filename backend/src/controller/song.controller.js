@@ -1,38 +1,51 @@
-const NodeID3 = require("node-id3");
 const songModel = require("../model/song.model");
+const { uploadFile } = require("../services/storage.service");
+
+function normalizeMood(mood) {
+  const requestedMood = String(mood || "").trim().toLowerCase();
+  return ["sad", "happy", "surprised"].includes(requestedMood)
+   ? requestedMood
+    : "happy";
+}
 
 async function uploadSong(req, res) {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
+    const songFile = req.file;
 
-    const tags = NodeID3.read(req.file.buffer) || {};
-    const artist = tags.artist || req.body.artist;
-    const title = tags.title || req.body.title || req.file.originalname;
-    const genre = tags.genre || req.body.genre || "unknown";
-    const requestedMood = String(req.body.mood || "").trim().toLowerCase();
-    const mood = ["sad", "happy", "surprised"].includes(requestedMood)
-      ? requestedMood
-      : "happy";
-
-    if (!artist || !title) {
+    if (!songFile) {
       return res.status(400).json({
-        error: "song title and artist are required",
+        error: "Song file is required",
       });
     }
 
+    const mood = normalizeMood(req.body.mood);
+
+    const uploadedSong = await uploadFile(
+      songFile.buffer,
+      songFile.originalname,
+      "/moodify/songs"
+    );
+
+    // ✅ Schema ke saare required fields bhar do
     const song = await songModel.create({
-      title,
-      artist,
-      genre,
-      mood,
+      title: songFile.originalname,
+      artist: "Unknown Artist", // ✅ Required tha
+      genre: "unknown",         // ✅ Required tha
+      type: songFile.mimetype,  // ✅ Required tha - audio/mpeg jayega
+      mood: mood,               // ✅ Required tha
+      poster: "https://via.placeholder.com/300", // ✅ Required tha - ab frontend me dikhega
+      url: uploadedSong.url,    // ✅ Tera wala
+      file: {                   // ✅ Required tha - object chahiye
+        url: uploadedSong.url,
+        fileId: uploadedSong.fileId,
+        name: uploadedSong.name,
+        fileType: uploadedSong.fileType
+      }
     });
 
     return res.status(201).json({
-      message: "song uploaded successfully",
+      message: "Song uploaded successfully",
       song,
-      id3: tags,
     });
   } catch (error) {
     return res.status(500).json({
@@ -42,6 +55,33 @@ async function uploadSong(req, res) {
   }
 }
 
+async function getSongs(req, res) {
+  try {
+    const songs = await songModel.find().sort({ createdAt: -1 });
+    return res.json(songs);
+  } catch (error) {
+    return res.status(500).json({
+      error: "Failed to fetch songs",
+      detail: error.message,
+    });
+  }
+}
+
+async function suggestSongs(req, res) {
+  try {
+    const mood = normalizeMood(req.body.mood);
+    const songs = await songModel.find({ mood }).sort({ createdAt: -1 });
+    return res.json(songs);
+  } catch (error) {
+    return res.status(500).json({
+      error: "Failed to fetch suggested songs",
+      detail: error.message,
+    });
+  }
+}
+
 module.exports = {
   uploadSong,
+  getSongs,
+  suggestSongs,
 };

@@ -10,7 +10,7 @@ app.use(cors({
   credentials: true
 }));
 
-// THEN others
+
 app.use(express.json());
 app.use(cookieParser());
 app.get("/test", (req, res) => {
