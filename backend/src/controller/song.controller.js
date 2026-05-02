@@ -26,16 +26,16 @@ async function uploadSong(req, res) {
       "/moodify/songs"
     );
 
-    // ✅ Schema ke saare required fields bhar do
+    
     const song = await songModel.create({
       title: songFile.originalname,
-      artist: "Unknown Artist", // ✅ Required tha
-      genre: "unknown",         // ✅ Required tha
-      type: songFile.mimetype,  // ✅ Required tha - audio/mpeg jayega
-      mood: mood,               // ✅ Required tha
-      poster: "https://via.placeholder.com/300", // ✅ Required tha - ab frontend me dikhega
-      url: uploadedSong.url,    // ✅ Tera wala
-      file: {                   // ✅ Required tha - object chahiye
+      artist: "Unknown Artist", 
+      //   genre: "unknown",         
+      type: songFile.mimetype,  
+      mood: mood,               
+      poster: "https://via.placeholder.com/300", 
+      url: uploadedSong.url,   
+      file: {                   
         url: uploadedSong.url,
         fileId: uploadedSong.fileId,
         name: uploadedSong.name,
