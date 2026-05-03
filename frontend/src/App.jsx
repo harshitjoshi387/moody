@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Home from "./Pages/Home";
-// import FaceExpression from "./component/FaceExpression";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import FaceExpression from "./component/FaceExpression";
 import "./App.css";
 
 function App() {
@@ -12,7 +13,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/Register" element={<Register />} />
         <Route path="/home" element={<Home />} />
-        {/* <Route path="/mood-scan" element={<FaceExpression />} /> */}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/mood-scan" element={<FaceExpression />} />
       </Routes>
     </BrowserRouter>
   );
