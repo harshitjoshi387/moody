@@ -12,35 +12,23 @@ function normalizeMood(mood) {
 
 async function uploadSong(req, res) {
   try {
-    let songBuffer = null;
-    let originalName = "unknown.mp3";
-    let mimeType = "audio/mpeg";
-    let songUrl = null;
-
-    if (req.file) {
-      songBuffer = req.file.buffer;
-      originalName = req.file.originalname;
-      mimeType = req.file.mimetype;
-    } else if (req.body.url) {
-      const response = await fetch(req.body.url);
-      if (!response.ok) throw new Error("Failed to fetch song from provided URL");
-      const arrayBuffer = await response.arrayBuffer();
-      songBuffer = Buffer.from(arrayBuffer);
-      originalName = req.body.url.split('/').pop() || "unknown.mp3";
-      mimeType = response.headers.get("content-type") || "audio/mpeg";
-      songUrl = req.body.url;
-    } else {
+    if (!req.file) {
       return res.status(400).json({
-        error: "Song file or URL is required",
+        error: "Song file is required in form-data",
       });
     }
 
+    const songBuffer = req.file.buffer;
+    const originalName = req.file.originalname;
+    const mimeType = req.file.mimetype;
+
+    // Mood will be parsed and normalized (default to 'happy' if invalid/missing)
     const mood = normalizeMood(req.body.mood);
 
     // Extract ID3 Tags
     let title = originalName;
     let artist = "Unknown Artist";
-    let posterBase64 = "https://picsum.photos/300?random=1";
+    let posterBase64 = "";
 
     try {
       const tags = NodeID3.read(songBuffer);
@@ -56,30 +44,17 @@ async function uploadSong(req, res) {
       console.error("Error reading ID3 tags:", e);
     }
 
-    let finalUrl = songUrl;
-    let finalFileObj = {};
-
-    if (!finalUrl) {
-      // If it was a file upload, upload it to the storage service
-      const uploadedSong = await uploadFile(
-        songBuffer,
-        originalName,
-        "/moodify/songs"
-      );
-      finalUrl = uploadedSong.url;
-      finalFileObj = {
-        url: uploadedSong.url,
-        fileId: uploadedSong.fileId,
-        name: uploadedSong.name,
-        fileType: uploadedSong.fileType
-      };
-    } else {
-      finalFileObj = {
-        url: finalUrl,
-        name: originalName,
-        fileType: mimeType
-      };
+    // Default poster if not present in buffer memory (ID3 tags)
+    if (!posterBase64) {
+      posterBase64 = "https://picsum.photos/300?random=1";
     }
+
+    // Upload to the storage service
+    const uploadedSong = await uploadFile(
+      songBuffer,
+      originalName,
+      "/moodify/songs"
+    );
 
     const song = await songModel.create({
       title: title,
@@ -87,8 +62,13 @@ async function uploadSong(req, res) {
       type: mimeType,
       mood: mood,
       poster: posterBase64,
-      url: finalUrl,
-      file: finalFileObj
+      url: uploadedSong.url,
+      file: {
+        url: uploadedSong.url,
+        fileId: uploadedSong.fileId,
+        name: uploadedSong.name,
+        fileType: uploadedSong.fileType
+      }
     });
 
     return res.status(201).json({

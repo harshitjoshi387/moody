@@ -6,7 +6,11 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Form submitted");
+    navigate("/home", { replace: true });
+  };
+
+  const handleDemoLogin = () => {
+    navigate("/home", { replace: true });
   };
 
   return (
@@ -15,7 +19,7 @@ const Login = () => {
       <div className="w-[350px] bg-[#121212] text-white shadow-2xl rounded-xl p-6 border border-gray-800">
         
         <p className="text-center text-2xl font-bold mb-6">
-          Log in to Spotify
+          Log in to Moodify
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -52,6 +56,14 @@ const Login = () => {
           <div className="flex-1 h-[1px] bg-gray-700"></div>
         </div>
 
+        <button 
+          onClick={handleDemoLogin}
+          type="button"
+          className="w-full flex items-center justify-center rounded-full px-4 py-2 border border-gray-600 hover:border-white hover:bg-[#282828] cursor-pointer transition mb-3"
+        >
+          <span>Try Demo Login (Free)</span>
+        </button>
+
         <div className="flex items-center justify-center rounded-full px-4 py-2 border border-gray-600 hover:border-white cursor-pointer transition">
           <span>Continue with Google</span>
         </div>
@@ -62,7 +74,7 @@ const Login = () => {
             onClick={() => navigate("/register")}
             className="text-white underline cursor-pointer hover:text-green-400"
           >
-            Sign up for Spotify
+            Sign up for Moodify
           </span>
         </p>
 

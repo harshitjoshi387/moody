@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ArrowLeft, Loader2, Music, User, Frown, Smile, Meh } from 'lucide-react';
+import { Camera, ArrowLeft, Loader2, Music, User, Frown, Smile, Meh, Play } from 'lucide-react';
 
 const MOOD_SONGS = {
   Happy: { title: "Walking on Sunshine", artist: "Katrina & The Waves", cover: "https://picsum.photos/300?random=11", color: "from-yellow-400 to-orange-500" },
@@ -196,11 +196,14 @@ const FaceExpression = () => {
                   <p className="text-sm text-gray-400 mb-4 uppercase tracking-wider font-semibold">Suggested Track</p>
                   
                   {suggestedSong ? (
-                    <div className="flex items-center gap-4 bg-[#282828] p-4 rounded-xl hover:bg-[#333] transition cursor-pointer group">
+                    <div 
+                      onClick={() => navigate('/home', { state: { playSong: suggestedSong } })}
+                      className="flex items-center gap-4 bg-[#282828] p-4 rounded-xl hover:bg-[#333] transition cursor-pointer group"
+                    >
                       <div className="relative w-20 h-20 rounded-md overflow-hidden shadow-lg flex-shrink-0">
                         <img src={suggestedSong.poster || "https://picsum.photos/300"} alt="Cover" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                          <Music className="w-8 h-8 text-white" />
+                          <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">

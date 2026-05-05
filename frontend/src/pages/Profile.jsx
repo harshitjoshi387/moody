@@ -97,10 +97,10 @@ const Profile = () => {
           {/* Topbar */}
           <div className="h-16 flex items-center justify-between px-6 bg-transparent z-20 absolute top-0 w-full">
             <div className="flex items-center gap-2">
-              <button onClick={() => navigate(-1)} className="w-8 h-8 bg-black/60 hover:bg-black/80 transition rounded-full flex items-center justify-center text-white">
+              <button onClick={() => navigate(-1)} className="w-8 h-8 bg-black/60 hover:bg-black/80 transition rounded-full flex items-center justify-center text-white cursor-pointer">
                 <ChevronLeft size={20} />
               </button>
-              <button className="w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-gray-400 cursor-not-allowed">
+              <button onClick={() => navigate(1)} className="w-8 h-8 bg-black/60 hover:bg-black/80 transition rounded-full flex items-center justify-center text-white cursor-pointer">
                 <ChevronRight size={20} />
               </button>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Library, Plus, ArrowRight, Search, ChevronLeft, ChevronRight,
@@ -9,6 +9,7 @@ import {
 
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [dbSongs, setDbSongs] = useState([]);
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,6 +20,31 @@ const Home = () => {
   // New States
   const [volume, setVolume] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [isAutoplay, setIsAutoplay] = useState(true);
+
+  const [likedSongs, setLikedSongs] = useState(() => {
+    const saved = localStorage.getItem('likedSongs');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [currentView, setCurrentView] = useState("all");
+
+  useEffect(() => {
+    localStorage.setItem('likedSongs', JSON.stringify(likedSongs));
+  }, [likedSongs]);
+
+  const toggleLike = (song, e) => {
+    if (e) e.stopPropagation();
+    if (!song) return;
+    setLikedSongs(prev => {
+      const isLiked = prev.some(s => s._id === song._id);
+      if (isLiked) {
+        return prev.filter(s => s._id !== song._id);
+      } else {
+        return [...prev, song];
+      }
+    });
+  };
 
   const audioRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -48,6 +74,24 @@ const Home = () => {
     };
     fetchSongs();
   }, []);
+
+  useEffect(() => {
+    if (location.state && location.state.playSong) {
+      const songToPlay = location.state.playSong;
+      
+      setDbSongs(prev => {
+        if (!prev.some(s => s._id === songToPlay._id)) {
+          return [songToPlay, ...prev];
+        }
+        return prev;
+      });
+
+      setCurrentSong(songToPlay);
+      setIsPlaying(true);
+      
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Format time in MM:SS
   const formatTime = (time) => {
@@ -160,8 +204,54 @@ const Home = () => {
     { _id: '2', title: "Latest Tamil", artist: "New Music from Kollywood", poster: "https://picsum.photos/300?random=42", url: "" }
   ];
 
-  const displaySongs = dbSongs.length > 0 ? dbSongs : fallbackSongs;
-  const activeSong = currentSong || displaySongs[0];
+  const displaySongs = currentView === 'liked' ? likedSongs : (dbSongs.length > 0 ? dbSongs : fallbackSongs);
+  const activeSong = currentSong || (displaySongs.length > 0 ? displaySongs[0] : null);
+
+  const playNextSong = () => {
+    if (!currentSong) return;
+    const currentIndex = displaySongs.findIndex(s => s._id === currentSong._id);
+    if (currentIndex !== -1) {
+      let nextIndex;
+      if (isShuffle) {
+        nextIndex = Math.floor(Math.random() * displaySongs.length);
+      } else {
+        nextIndex = (currentIndex + 1) % displaySongs.length;
+      }
+      
+      const nextSong = displaySongs[nextIndex];
+      if (currentSong._id === nextSong._id) {
+         if (audioRef.current) {
+           audioRef.current.currentTime = 0;
+           audioRef.current.play().catch(e => console.error("Playback error:", e));
+         }
+         setIsPlaying(true);
+      } else {
+         setCurrentSong(nextSong);
+         setIsPlaying(true);
+      }
+    }
+  };
+
+  const playPrevSong = () => {
+    if (!currentSong) return;
+    const currentIndex = displaySongs.findIndex(s => s._id === currentSong._id);
+    if (currentIndex !== -1) {
+      let prevIndex = currentIndex - 1;
+      if (prevIndex < 0) prevIndex = displaySongs.length - 1;
+      const prevSong = displaySongs[prevIndex];
+      
+      if (currentSong._id === prevSong._id) {
+         if (audioRef.current) {
+           audioRef.current.currentTime = 0;
+           audioRef.current.play().catch(e => console.error("Playback error:", e));
+         }
+         setIsPlaying(true);
+      } else {
+         setCurrentSong(prevSong);
+         setIsPlaying(true);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen bg-black text-white font-sans overflow-hidden">
@@ -172,7 +262,13 @@ const Home = () => {
         src={currentSong?.url || currentSong?.file?.url || ""}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={() => {
+          if (isAutoplay) {
+            playNextSong();
+          } else {
+            setIsPlaying(false);
+          }
+        }}
       />
 
       {/* Top Navbar & Main Content Container */}
@@ -182,7 +278,7 @@ const Home = () => {
         <div className="w-[320px] bg-[#121212] rounded-lg flex flex-col overflow-hidden hidden md:flex">
           {/* Library Header */}
           <div className="p-4 flex items-center justify-between text-gray-400 font-semibold shadow-sm">
-            <button className="flex items-center gap-3 hover:text-white transition">
+            <button onClick={() => setCurrentView('all')} className={`flex items-center gap-3 transition ${currentView === 'all' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
               <Library size={24} />
               <span>Your Library</span>
             </button>
@@ -202,14 +298,17 @@ const Home = () => {
           </div>
 
           <div className="flex-1 overflow-y-auto px-2 pb-2">
-            <div className="flex items-center gap-3 p-2 hover:bg-[#1a1a1a] rounded-md cursor-pointer transition">
+            <div 
+              onClick={() => setCurrentView('liked')}
+              className={`flex items-center gap-3 p-2 hover:bg-[#1a1a1a] rounded-md cursor-pointer transition ${currentView === 'liked' ? 'bg-[#1a1a1a]' : ''}`}
+            >
               <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-blue-300 flex items-center justify-center rounded-md">
                 <Heart size={20} fill="white" />
               </div>
               <div>
                 <p className="text-white font-semibold text-sm">Liked Songs</p>
                 <p className="text-xs text-gray-400 flex items-center gap-1">
-                  <span className="text-[#1db954]">📌</span> Playlist • 35 songs
+                  <span className="text-[#1db954]">📌</span> Playlist • {likedSongs.length} songs
                 </p>
               </div>
             </div>
@@ -232,10 +331,10 @@ const Home = () => {
           {/* Topbar */}
           <div className="h-16 flex items-center justify-between px-6 bg-[#121212]/80 backdrop-blur-md z-20 sticky top-0">
             <div className="flex items-center gap-2">
-              <button className="w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-gray-400 cursor-not-allowed">
+              <button onClick={() => navigate(-1)} className="w-8 h-8 bg-black/60 hover:bg-black/80 transition rounded-full flex items-center justify-center text-white cursor-pointer">
                 <ChevronLeft size={20} />
               </button>
-              <button className="w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-gray-400 cursor-not-allowed">
+              <button onClick={() => navigate(1)} className="w-8 h-8 bg-black/60 hover:bg-black/80 transition rounded-full flex items-center justify-center text-white cursor-pointer">
                 <ChevronRight size={20} />
               </button>
             </div>
@@ -314,14 +413,18 @@ const Home = () => {
               <div>
                 <div className="flex items-end justify-between mb-4">
                   <h2 className="text-2xl font-bold hover:underline cursor-pointer">
-                    {dbSongs.length > 0 ? "Your Backend Library" : "Hot Hits"}
+                    {currentView === 'liked' ? "Liked Songs" : (dbSongs.length > 0 ? "Songs Library" : "Hot Hits")}
                   </h2>
                   <span className="text-sm text-gray-400 font-bold hover:underline cursor-pointer">Show all</span>
                 </div>
                 
-                <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide">
+                {displaySongs.length === 0 && currentView === 'liked' ? (
+                  <div className="text-gray-400 text-sm py-10 text-center">No liked songs yet. Go find some music you love!</div>
+                ) : (
+                <div className="flex flex-wrap pb-4 gap-6">
                   {displaySongs.map((song, idx) => {
                     const isThisPlaying = currentSong?._id === song._id && isPlaying;
+                    const isLiked = likedSongs.some(s => s._id === song._id);
                     return (
                       <motion.div 
                         variants={itemVariants}
@@ -331,6 +434,13 @@ const Home = () => {
                       >
                         <div className="relative mb-4 shadow-lg rounded-md overflow-hidden aspect-square">
                           <img src={song.poster || `https://picsum.photos/300?random=${idx + 40}`} alt={song.title} className="w-full h-full object-cover" />
+                          
+                          <button 
+                            onClick={(e) => toggleLike(song, e)}
+                            className={`absolute top-2 right-2 z-10 p-2 rounded-full bg-black/40 hover:bg-black/60 transition-all ${isLiked ? 'text-[#1db954] opacity-100' : 'text-white opacity-0 group-hover:opacity-100'}`}
+                          >
+                            <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+                          </button>
                           
                           <div className={`absolute bottom-2 right-2 z-10 bg-[#1db954] text-black w-12 h-12 rounded-full flex items-center justify-center shadow-xl hover:scale-105 hover:bg-[#1ed760] transition-all duration-300 ${isThisPlaying ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 group-hover:translate-y-0 group-hover:opacity-100'}`}>
                             {isThisPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
@@ -342,32 +452,7 @@ const Home = () => {
                     )
                   })}
                 </div>
-              </div>
-
-              {/* Popular Artists */}
-              <div>
-                <div className="flex items-end justify-between mb-4">
-                  <h2 className="text-2xl font-bold hover:underline cursor-pointer">Popular artists</h2>
-                  <span className="text-sm text-gray-400 font-bold hover:underline cursor-pointer">Show all</span>
-                </div>
-                <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide">
-                  {popularArtists.map((artist, idx) => (
-                    <motion.div 
-                      variants={itemVariants}
-                      key={idx} 
-                      className="bg-[#181818] p-4 rounded-lg hover:bg-[#282828] transition-all group cursor-pointer relative min-w-[200px] w-[200px] flex-shrink-0 flex flex-col items-center text-center"
-                    >
-                      <div className="relative mb-4 rounded-full overflow-hidden w-full aspect-square shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
-                        <img src={artist.img} alt={artist.name} className="w-full h-full object-cover" />
-                        <div className="absolute bottom-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10 bg-[#1db954] text-black w-12 h-12 rounded-full flex items-center justify-center shadow-xl hover:scale-105 hover:bg-[#1ed760]">
-                          <Play size={24} fill="currentColor" className="ml-1" />
-                        </div>
-                      </div>
-                      <h3 className="font-bold text-white mb-1 w-full truncate">{artist.name}</h3>
-                      <p className="text-sm text-gray-400">Artist</p>
-                    </motion.div>
-                  ))}
-                </div>
+                )}
               </div>
 
             </motion.div>
@@ -391,14 +476,20 @@ const Home = () => {
               {activeSong?.artist || "Unknown Artist"}
             </p>
           </div>
-          <Heart size={16} className="text-[#1db954] ml-2 hidden md:block" fill="currentColor" />
+          <button onClick={() => toggleLike(activeSong)}>
+            <Heart size={16} className={`ml-2 hidden md:block transition hover:scale-110 ${likedSongs.some(s => s._id === activeSong?._id) ? 'text-[#1db954]' : 'text-gray-400 hover:text-white'}`} fill={likedSongs.some(s => s._id === activeSong?._id) ? "currentColor" : "none"} />
+          </button>
         </div>
 
         {/* Player Controls */}
         <div className="w-[40%] flex flex-col items-center">
           <div className="flex items-center gap-6 mb-2 text-gray-400">
-            <Shuffle size={18} className="hover:text-white transition hidden sm:block" />
-            <SkipBack size={20} className="hover:text-white transition fill-current" />
+            <button onClick={() => setIsShuffle(!isShuffle)}>
+              <Shuffle size={18} className={`hover:text-white transition hidden sm:block ${isShuffle ? 'text-[#1db954]' : ''}`} />
+            </button>
+            <button onClick={playPrevSong}>
+              <SkipBack size={20} className="hover:text-white transition fill-current" />
+            </button>
             
             <button 
               onClick={togglePlay}
@@ -411,8 +502,12 @@ const Home = () => {
               )}
             </button>
             
-            <SkipForward size={20} className="hover:text-white transition fill-current" />
-            <Repeat size={18} className="hover:text-white transition hidden sm:block" />
+            <button onClick={playNextSong}>
+              <SkipForward size={20} className="hover:text-white transition fill-current" />
+            </button>
+            <button onClick={() => setIsAutoplay(!isAutoplay)}>
+              <Repeat size={18} className={`hover:text-white transition hidden sm:block ${isAutoplay ? 'text-[#1db954]' : ''}`} />
+            </button>
           </div>
           
           <div className="flex items-center gap-2 w-full max-w-[600px] text-xs text-gray-400">

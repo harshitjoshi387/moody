@@ -8,7 +8,7 @@ const JWT_SECRET =
   process.env.JWT_SECRECT ||
   process.env.JWT_SECRET_KEY;
 
-function buildToken(user, expiresIn = "7d") {
+function buildToken(user, expiresIn = "90d") {
   return jwt.sign(
     {
       id: user._id,
@@ -24,7 +24,7 @@ function setAuthCookie(res, token) {
     httpOnly: true,
     sameSite: "lax",
     secure: false,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
   });
 }
 
@@ -105,7 +105,7 @@ async function loginUser(req, res) {
       });
     }
 
-    const token = buildToken(user, "3d");
+    const token = buildToken(user, "90d");
     setAuthCookie(res, token);
 
     return res.status(200).json({
