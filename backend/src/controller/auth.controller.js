@@ -22,8 +22,8 @@ function buildToken(user, expiresIn = "90d") {
 function setAuthCookie(res, token) {
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false,
+    sameSite: "none",
+    secure: true,
     maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
   });
 }
