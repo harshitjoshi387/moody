@@ -12,17 +12,13 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: (origin, callback) => callback(null, true),
   credentials: true
 }));
+
+app.get("/", (req, res) => {
+  res.json({ message: "Moodify Backend is running" });
+});
 
 
 app.use(express.json());
