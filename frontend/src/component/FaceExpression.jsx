@@ -55,7 +55,7 @@ const FaceExpression = () => {
       setMood(randomMood);
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/songs/suggest`, {
+        const res = await fetch('http://localhost:3000/api/songs/suggest', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mood: randomMood })
