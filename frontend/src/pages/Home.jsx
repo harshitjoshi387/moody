@@ -63,7 +63,7 @@ const Home = () => {
   useEffect(() => {
     const fetchSongs = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/songs');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/songs`);
         const data = await response.json();
         if (Array.isArray(data)) {
           setDbSongs(data);
